@@ -1,0 +1,49 @@
+version: "3.8"
+services:
+  iam-server:
+    ports:
+    - mode: host
+      target: 8080
+      published: 38080
+      protocol: tcp
+
+  domain-server:
+    environment:
+      NODE_ENV: development
+    ports:
+    - mode: host
+      target: 8080
+      published: 38081
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ./domain-server
+      target: /app
+
+  gui-client:
+    environment:
+      NODE_ENV: development
+      IAM_SERVER_ENDPOINT: http://127.0.0.1:38080
+      DOMAIN_SERVER_ENDPOINT: http://127.0.0.1:38081
+    ports:
+    - mode: host
+      target: 8080
+      published: 38082
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ./gui-client
+      target: /app
+
+  machine-client:
+    environment:
+      NODE_ENV: development
+    ports:
+    - mode: host
+      target: 8080
+      published: 38083
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ./machine-client
+      target: /app

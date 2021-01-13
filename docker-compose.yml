@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  iam-server:
+    image: quay.io/keycloak/keycloak:12.0.1
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+
+  domain-server:
+    depends_on:
+    - iam-server
+    build:
+      context: ./domain-server
+      dockerfile: Dockerfile
+    image: 127.0.0.1:5000/iam-playground/domain-server:0.1.0
+    environment:
+      IAM_SERVER_ENDPOINT: http://iam-server:8080
+
+  gui-client:
+    depends_on:
+    - iam-server
+    - domain-server
+    build:
+      context: ./gui-client
+      dockerfile: Dockerfile
+    image: 127.0.0.1:5000/iam-playground/gui-client:0.1.0
+    environment:
+      IAM_SERVER_ENDPOINT: http://iam-server:8080
+      DOMAIN_SERVER_ENDPOINT: http://domain-server:8080
+
+  machine-client:
+    depends_on:
+    - iam-server
+    - domain-server
+    build:
+      context: ./machine-client
+      dockerfile: Dockerfile
+    image: 127.0.0.1:5000/iam-playground/machine-client:0.1.0
+    environment:
+      IAM_SERVER_ENDPOINT: http://iam-server:8080
+      DOMAIN_SERVER_ENDPOINT: http://domain-server:8080
